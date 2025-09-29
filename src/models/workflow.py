@@ -1,19 +1,13 @@
-from dataclasses import dataclass
-from datetime import datetime
-from typing import List
+from pydantic import BaseModel, Field
+from typing import List, Optional
+from datetime import date
 from .unit_operation import UnitOperation
 
-@dataclass
-class Workflow:
+class Workflow(BaseModel):
+    """워크플로우 모델"""
+    file_name: str
     title: str
-    experimenter: str
-    status: str
-    created_date: datetime
-    last_updated_date: datetime
-    unit_operations: List[UnitOperation]
-    
-    def calculate_automation_level(self) -> float:
-        total_score = 0
-        for uo in self.unit_operations:
-            total_score += uo.automation_score
-        return total_score / len(self.unit_operations) if self.unit_operations else 0
+    status: str = "Planned" # Planned, In Progress, Completed
+    created_date: Optional[date] = None
+    last_updated_date: Optional[date] = None
+    unit_operations: List[UnitOperation] = Field(default_factory=list)

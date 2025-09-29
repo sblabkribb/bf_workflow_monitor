@@ -1,32 +1,16 @@
-from dataclasses import dataclass
-from datetime import datetime
-from typing import Dict, Optional
+from pydantic import BaseModel, Field
+from typing import List, Optional
+from datetime import date
+from .kpi import KPI
 
-@dataclass
-class UnitOperation:
+class UnitOperation(BaseModel):
+    """Unit Operation (UO) 모델"""
     id: str
     name: str
-    experimenter: str
-    start_date: Optional[datetime]
-    end_date: Optional[datetime]
-    hw_automation: str
-    sw_automation: str
-    kpis: Dict[str, float]
-    results: str
-    
-    @property
-    def automation_score(self) -> int:
-        score = 0
-        if self.hw_automation and "Manual" not in self.hw_automation:
-            score += 1
-        if self.sw_automation and self.sw_automation != "None":
-            score += 2
-        return score
-
-    @property
-    def status(self) -> str:
-        if self.end_date and self.results:
-            return "Completed"
-        elif self.start_date:
-            return "In Progress"
-        return "Planned"
+    experimenter: Optional[str] = None
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+    status: str = "Planned"  # Planned, In Progress, Completed
+    automation_level: int = 0
+    kpis: List[KPI] = Field(default_factory=list)
+    raw_content: str # 파싱된 원본 마크다운 텍스트

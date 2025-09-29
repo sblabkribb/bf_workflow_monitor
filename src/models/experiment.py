@@ -1,20 +1,13 @@
-from dataclasses import dataclass
-from datetime import datetime
-from typing import List
+from pydantic import BaseModel, Field
+from typing import List, Optional
+from datetime import date
 from .workflow import Workflow
 
-@dataclass
-class Experiment:
+class Experiment(BaseModel):
+    """최상위 실험 모델"""
+    folder_name: str
     title: str
-    author: str
-    status: str
-    created_date: datetime
-    workflows: List[Workflow]
-    
-    def calculate_overall_status(self) -> str:
-        completed = sum(1 for w in self.workflows if w.status == "Completed")
-        if completed == len(self.workflows):
-            return "Completed"
-        elif completed > 0:
-            return "In Progress"
-        return "Planned"
+    author: Optional[str] = None
+    created_date: Optional[date] = None
+    status: str = "Planned" # Planned, In Progress, Completed
+    workflows: List[Workflow] = Field(default_factory=list)

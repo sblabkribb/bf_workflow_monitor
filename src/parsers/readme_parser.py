@@ -1,34 +1,34 @@
 import re
-from datetime import datetime
 from pathlib import Path
-import yaml
+import frontmatter
 from ..models.experiment import Experiment
+from ..models.workflow import Workflow
 
 class ReadmeParser:
-    def __init__(self, filepath: Path):
+    def __init__(self, filepath: Path, exp_folder: Path):
         self.filepath = filepath
-        
+        self.exp_folder = exp_folder
+
     def parse(self) -> Experiment:
-        content = self.filepath.read_text()
-        
-        # Parse YAML front matter
-        yaml_match = re.match(r"---\n(.*?)\n---", content, re.DOTALL)
-        if not yaml_match:
-            raise ValueError("No YAML front matter found")
-            
-        metadata = yaml.safe_load(yaml_match.group(1))
-        
+        content = self.filepath.read_text(encoding="utf-8")
+        post = frontmatter.loads(content)
+
         # Parse workflow list
-        workflow_lines = re.findall(r"- \[([ x])\] \[(.*?)\]", content)
-        workflows = [
-            {"file": wf[1], "completed": bool(wf[0].strip())}
-            for wf in workflow_lines
-        ]
-        
+        # 정규표현식 수정: `- `가 없는 형식도 지원하도록 `(- )?` 추가
+        workflow_lines = re.findall(r'(- )?\[.\]\s\[(.*?)\]\((.*?)\)', post.content)
+
+        workflows = []
+        for _, _, file_path in workflow_lines: # 캡처 그룹이 3개로 늘어남
+            # 워크플로우 파일의 title은 나중에 workflow_parser가 채움
+            workflows.append(Workflow(
+                file_name=file_path,
+                title=Path(file_path).stem # 임시 제목
+            ))
+
         return Experiment(
-            title=metadata["title"],
-            author=metadata["author"],
-            status=metadata["status"],
-            created_date=datetime.strptime(metadata["created_date"], "%Y-%m-%d"),
+            folder_name=self.exp_folder.name,
+            title=post.metadata.get("title", "Untitled Experiment"),
+            author=post.metadata.get("author"),
+            created_date=post.metadata.get("created_date"),
             workflows=workflows
         )
