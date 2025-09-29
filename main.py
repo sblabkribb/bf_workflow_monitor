@@ -8,7 +8,8 @@ from src.parsers.readme_parser import ReadmeParser
 from src.parsers.workflow_parser import WorkflowParser
 from src.utils.status_calculator import StatusCalculator
 # visualizer 파일이 models 폴더에 있으므로 경로를 수정합니다. (이전 수정 유지)
-from src.models.gantt_chart_visualizer import MermaidGanttChartVisualizer 
+from src.models.gantt_chart_visualizer import MermaidGanttChartVisualizer
+from src.models.workflow_template_visualizer import WorkflowTemplateVisualizer
 
 # 프로젝트 루트를 sys.path에 추가하여 모듈을 찾을 수 있도록 함
 sys.path.append(str(Path(__file__).resolve().parent))
@@ -70,17 +71,27 @@ if __name__ == "__main__":
 
     print(json.dumps(results, indent=2, default=str, ensure_ascii=False))
 
-    print("\n\n--- 2. Mermaid.js Gantt Chart Markdown ---")
-    # 시각화 인스턴스 생성
-    visualizer = MermaidGanttChartVisualizer()
+    # --- 시각화 마크다운 생성 ---
+    print("\n\n--- 2. Generating Visualization Markdown ---")
+    
+    # 템플릿 흐름도 생성
+    template_visualizer = WorkflowTemplateVisualizer()
+    flowchart_md = template_visualizer.generate_flowchart(parsed_experiments)
 
-    # 간트 차트 마크다운 생성
-    gantt_chart_md = visualizer.generate_charts(parsed_experiments)
+    # 간트 차트 생성
+    gantt_visualizer = MermaidGanttChartVisualizer()
+    gantt_chart_md = gantt_visualizer.generate_charts(parsed_experiments)
+
+    # 흐름도와 간트 차트 마크다운을 결합
+    # 간트 차트에는 이미 ## 타이틀이 있으므로, 구분을 위해 h1 타이틀 추가
+    final_md = flowchart_md
+    if gantt_chart_md:
+        final_md += "\n\n<br/>\n\n# 📊 실험별 진행 현황 (간트 차트)\n" + gantt_chart_md
 
     # 결과 출력
-    print(gantt_chart_md)
+    print(final_md)
 
     # 생성된 마크다운을 파일로 저장
     output_md_path = Path("gantt_chart.md")
-    output_md_path.write_text(gantt_chart_md, encoding="utf-8")
-    print(f"\n--- Gantt chart markdown has been saved to: {output_md_path.resolve()} ---")
+    output_md_path.write_text(final_md, encoding="utf-8")
+    print(f"\n--- Visualization markdown has been saved to: {output_md_path.resolve()} ---")
