@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BF Workflow Monitor</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; color: #333; max-width: 1200px; margin: 0 auto; padding: 20px; background-color: #f8f9fa; }
+        h1, h2 { color: #2c3e50; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; }
+        h1 { text-align: center; }
+        .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        pre { background-color: #2d2d2d; color: #f1f1f1; padding: 15px; border-radius: 5px; white-space: pre-wrap; word-wrap: break-word; }
+        .mermaid { text-align: center; background-color: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BF Workflow Monitor Dashboard</h1>
+
+        <div id="visualizations">
+            {{ flowchart_md | safe }}
+            <br/>
+            {% if gantt_chart_md %}
+            <h1>📊 실험별 진행 현황 (간트 차트)</h1>
+            {{ gantt_chart_md | safe }}
+            {% endif %}
+        </div>
+
+        <hr style="margin: 40px 0;">
+
+        <h2>🔬 Parsed JSON Data</h2>
+        <pre><code>{{ json_data }}</code></pre>
+    </div>
+
+    <!-- Mermaid.js for rendering charts -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</body>
+</html>

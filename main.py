@@ -1,13 +1,14 @@
 import json
 import sys
 from pathlib import Path
-from typing import List
+from typing import List, Dict, Any
+from flask import Flask, jsonify, render_template
+from flask_cors import CORS
 
 from src.models.experiment import Experiment
 from src.parsers.readme_parser import ReadmeParser
 from src.parsers.workflow_parser import WorkflowParser
 from src.utils.status_calculator import StatusCalculator
-# visualizer 파일이 models 폴더에 있으므로 경로를 수정합니다. (이전 수정 유지)
 from src.models.gantt_chart_visualizer import MermaidGanttChartVisualizer
 from src.models.workflow_template_visualizer import WorkflowTemplateVisualizer
 
@@ -15,9 +16,13 @@ from src.models.workflow_template_visualizer import WorkflowTemplateVisualizer
 sys.path.append(str(Path(__file__).resolve().parent))
 
 class LabnoteMonitor:
+    """
+    Labnote 디렉토리를 모니터링하고 파싱하는 클래스.
+    웹 애플리케이션의 어느 곳에서나 재사용될 수 있도록 분리.
+    """
     def __init__(self, root_dir: Path):
         self.root_dir = root_dir
-
+        
     def monitor(self) -> List[Experiment]:
         """지정된 폴더 내의 모든 실험 노트를 파싱하고 집계합니다."""
         experiment_folders = [
@@ -54,44 +59,57 @@ class LabnoteMonitor:
 
         return experiments
 
-if __name__ == "__main__":
-    # 실제 labnote 폴더 경로를 지정하세요.
-    labnote_path = Path("./labnote")
-    monitor = LabnoteMonitor(labnote_path)
+app = Flask(__name__, template_folder='templates')
+# CORS(Cross-Origin Resource Sharing) 설정
+# '/api/'로 시작하는 모든 경로에 대해 모든 도메인에서의 요청을 허용합니다.
+# React 개발 서버(보통 localhost:3000)에서 API를 호출하기 위해 필요합니다.
+CORS(app, resources={r"/api/*": {"origins": "*"}})
+labnote_path = Path("./labnote")
+monitor = LabnoteMonitor(labnote_path)
+
+def get_monitor_data() -> Dict[str, Any]:
+    """Helper function to get parsed data and visualizations."""
     parsed_experiments = monitor.monitor()
 
-    # 파싱된 결과를 JSON으로 변환하여 출력
-    print("--- 1. Parsed JSON Data ---")
+    # 1. JSON 데이터 생성
     try:
-        # Pydantic v2+
         results = [exp.model_dump(exclude_none=True) for exp in parsed_experiments]
     except AttributeError:
-        # Pydantic v1
         results = [exp.dict(exclude_none=True) for exp in parsed_experiments]
+    json_output = json.dumps(results, indent=2, default=str, ensure_ascii=False)
 
-    print(json.dumps(results, indent=2, default=str, ensure_ascii=False))
-
-    # --- 시각화 마크다운 생성 ---
-    print("\n\n--- 2. Generating Visualization Markdown ---")
-    
-    # 템플릿 흐름도 생성
+    # 2. 시각화 마크다운 생성
     template_visualizer = WorkflowTemplateVisualizer()
     flowchart_md = template_visualizer.generate_flowchart(parsed_experiments)
 
-    # 간트 차트 생성
     gantt_visualizer = MermaidGanttChartVisualizer()
     gantt_chart_md = gantt_visualizer.generate_charts(parsed_experiments)
 
-    # 흐름도와 간트 차트 마크다운을 결합
-    # 간트 차트에는 이미 ## 타이틀이 있으므로, 구분을 위해 h1 타이틀 추가
-    final_md = flowchart_md
-    if gantt_chart_md:
-        final_md += "\n\n<br/>\n\n# 📊 실험별 진행 현황 (간트 차트)\n" + gantt_chart_md
+    return {
+        "json_data": json_output,
+        "flowchart_md": flowchart_md,
+        "gantt_chart_md": gantt_chart_md,
+        "raw_json": results
+    }
 
-    # 결과 출력
-    print(final_md)
+@app.route('/')
+def index():
+    """메인 대시보드 페이지를 렌더링합니다."""
+    data = get_monitor_data()
+    return render_template(
+        'index.html',
+        json_data=data["json_data"],
+        flowchart_md=data["flowchart_md"],
+        gantt_chart_md=data["gantt_chart_md"]
+    )
 
-    # 생성된 마크다운을 파일로 저장
-    output_md_path = Path("gantt_chart.md")
-    output_md_path.write_text(final_md, encoding="utf-8")
-    print(f"\n--- Visualization markdown has been saved to: {output_md_path.resolve()} ---")
+@app.route('/api/experiments')
+def get_experiments_api():
+    """파싱된 실험 데이터를 JSON API로 제공합니다."""
+    data = get_monitor_data()
+    return jsonify(data["raw_json"])
+
+if __name__ == "__main__":
+    # host='0.0.0.0'으로 설정하면 외부에서도 접속 가능합니다.
+    # debug=True 모드는 개발 중에 유용하며, 코드 변경 시 서버가 자동으로 재시작됩니다.
+    app.run(host='127.0.0.1', port=5001, debug=True)

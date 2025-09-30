@@ -28,7 +28,7 @@ last_updated_date: '2025-08-19'
 
 -   Experimenter: Wonjae
 -   Start_date: '2025-08-15 13:24'
--   End_date: ''
+-   End_date: '2025-08-16 13:24'
 
 #### Input
 
@@ -99,7 +99,7 @@ last_updated_date: '2025-08-19'
 #### Meta
 - Experimenter: Wonjae Seong
 - Start_date: '2025-08-14 06:26'
-- End_date: ''
+- End_date: '2025-08-15 13:24'
 
 #### Input
 - Source plate for GoldenGate assembly (SP001) 
@@ -131,7 +131,7 @@ last_updated_date: '2025-08-19'
 #### Meta
 - Experimenter: Wonjae Seong
 - Start_date: '2025-08-14 06:38'
-- End_date: ''
+- End_date: '2025-08-15 13:24'
 
 #### Input
 - Source plate without bubble (SP001)
@@ -174,7 +174,7 @@ last_updated_date: '2025-08-19'
 #### Meta
 - Experimenter: Wonjae
 - Start_date: '2025-08-18 04:22'
-- End_date: ''
+- End_date: '2025-08-21 13:24'
 
 #### Input
 - Part mixture plate (DP001) prepared for Golden Gate assembly
@@ -206,7 +206,7 @@ last_updated_date: '2025-08-19'
 #### Meta
 - Experimenter: Wonjae Seong
 - Start_date: '2025-08-14 06:42'
-- End_date: ''
+- End_date: '2025-08-15 13:24'
 
 #### Input
 -   Part mixture prepared for Golden Gate assembly (DP001)
@@ -246,7 +246,7 @@ last_updated_date: '2025-08-19'
 #### Meta
 - Experimenter: Wonjae Seong
 - Start_date: '2025-08-14 06:44'
-- End_date: ''
+- End_date: '2025-08-15 13:24'
 
 #### Input
 - Sealed 96-well skirted plate ready for efficient DNA assembly (DP001)

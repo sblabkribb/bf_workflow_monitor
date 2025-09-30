@@ -1,13 +1,53 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-venv/
-.venv/
+*.py[cod]
+*$py.class
 
-# IDEs
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Python virtualenv
+venv/
+env/
+
+# Node.js / React (inside frontend directory)
+frontend/node_modules/
+frontend/build/
+frontend/.pnp
+frontend/.pnp.js
+frontend/coverage/
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE and editor files
 .vscode/
 .idea/
 
@@ -15,5 +55,5 @@ venv/
 .DS_Store
 Thumbs.db
 
-# Generated output
-#gantt_chart.md
+# Generated markdown files
+gantt_chart.md

@@ -1,2 +1,4 @@
-pydantic
+Flask
+Flask-Cors
 python-frontmatter
+pydantic

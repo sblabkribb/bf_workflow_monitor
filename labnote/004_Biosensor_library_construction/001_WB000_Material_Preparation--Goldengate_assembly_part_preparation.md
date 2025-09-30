@@ -29,7 +29,7 @@ In this unit operation, we order DNA parts that constitute promoters, RBSs, term
 
 -   Experimenter: Wonjae Seong
 -   Start_date: '2025-08-20 10:55'
--   End_date: ''
+-   End_date: '2025-09-26 13:34'
 
 #### Input
 
@@ -87,7 +87,7 @@ In this unit operation, we prepare DNA parts with CDSs and inducible promoters w
 
 -   Experimenter: Wonjae Seong
 -   Start_date: '2025-08-20 11:05'
--   End_date: ''
+-   End_date: '2025-09-26 13:34'
 
 #### Input
 -   Part list
@@ -229,7 +229,7 @@ In this unit operation, we prepare DNA parts with CDSs and inducible promoters w
 
 - author: Hongyeon Kim
 - created_date: '2025-08-25'
-- last_updated_date: ''
+- last_updated_date: '2025-09-26 13:34'
 
 #### Input
 - PCR Product from previous step
